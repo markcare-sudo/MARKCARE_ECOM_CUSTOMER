@@ -110,7 +110,7 @@ const HomePage = () => {
                         subtitle="Buy certified high-performance units from trusted brands with full warranty."
                         linkText="View Catalog"
                     />
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-2 md:gap-x-6 gap-y-10">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-2 md:gap-x-6 gap-y-4">
                         {loading ? (
                             [1, 2, 3, 4].map(n => <div key={n} className="h-80 bg-slate-50 rounded-2xl animate-pulse" />)
                         ) : (
@@ -125,7 +125,7 @@ const HomePage = () => {
                         title="Service Packages & AMC"
                         subtitle="Pre-paid maintenance plans for peace of mind."
                     />
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-2 md:gap-x-6 gap-y-10">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-2 md:gap-x-6 gap-y-4">
                         {serviceItems.map(prod => (
                             <ProductCard key={prod.id} product={prod} />
                         ))}
