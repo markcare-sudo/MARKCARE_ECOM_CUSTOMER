@@ -6,6 +6,7 @@ import {
   FiUser,
   FiLogOut,
   FiChevronDown,
+  FiHeart,
 } from "react-icons/fi";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import LOGOS from "@/constants/images";
@@ -80,8 +81,13 @@ const Header = () => {
 
           {/* RIGHT SIDE */}
           <div className="flex items-center gap-3 md:gap-4" ref={dropdownRef}>
+            {/* WISHLIST */}
+            <button onClick={() => navigate("/wishlist")} className="relative p-2 cursor-pointer text-gray-500 hover:bg-gray-100 rounded-full">
+              <FiHeart className="text-xl" />
+            </button>
+
             {/* NOTIFICATION */}
-            <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full">
+            <button className="relative p-2 cursor-pointer text-gray-500 hover:bg-gray-100 rounded-full">
               <FiBell className="text-xl" />
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
             </button>

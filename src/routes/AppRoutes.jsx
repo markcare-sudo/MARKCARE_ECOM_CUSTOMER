@@ -12,6 +12,7 @@ import VerifyUserPage from "@/features/auth/pages/VerifyUser";
 import ProductsPage from "@/features/products/pages/ProductsPage";
 import SearchPage from "@/features/dashboard/pages/SearchPage";
 import ProductServiceDetailsPage from "@/features/products/pages/ProductDetailsPage";
+import WishlistPage from "@/features/products/pages/WishlistPage";
 
 // Lazy-loaded pages
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -50,6 +51,15 @@ const AppRoutes = () => {
               element={
                 <ErrorBoundary>
                   <ProfilePage />
+                </ErrorBoundary>
+              }
+            />
+
+            <Route
+              path="/wishlist"
+              element={
+                <ErrorBoundary>
+                  <WishlistPage />
                 </ErrorBoundary>
               }
             />

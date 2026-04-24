@@ -14,6 +14,9 @@ import "./styles/global.css";
 import { BrandProvider } from './context/BrandContext';
 import { ProductProvider } from './context/ProductContext';
 import { CategoryProvider } from './context/CategoryContext';
+import { ServiceProvider } from './context/ServiceContext';
+import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
 
 
 createRoot(document.getElementById('root')).render(
@@ -31,7 +34,13 @@ createRoot(document.getElementById('root')).render(
                   <BrandProvider>
                     <CategoryProvider>
                       <ProductProvider>
-                        <App />
+                        <ServiceProvider>
+                          <CartProvider>
+                            <WishlistProvider>
+                              <App />
+                            </WishlistProvider>
+                          </CartProvider>
+                        </ServiceProvider>
                       </ProductProvider>
                     </CategoryProvider>
                   </BrandProvider>
