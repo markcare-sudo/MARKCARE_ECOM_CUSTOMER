@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import cartService from "@/services/cart.service";
 import { successHandler } from "@/components/SuccessHandler";
 import { postErrorHandler } from "@/components/ErrorHandler";
@@ -13,12 +13,14 @@ export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState(null); // Flipkart style usually has a cart object with totals
     const [status, setStatus] = useState(apiStatusConstants.INITIAL);
 
+
     const fetchCart = useCallback(async () => {
         if (!isAuthenticated) return;
         try {
             setStatus(apiStatusConstants.IN_PROGRESS);
             const res = await cartService.getCart();
-            setCart(res.data.data || { items: [] });
+            console.log(res.data.data)
+            setCart(res.data.data || []);
             setStatus(apiStatusConstants.SUCCESS);
         } catch (err) {
             setStatus(apiStatusConstants.FAILURE);
@@ -26,9 +28,10 @@ export const CartProvider = ({ children }) => {
     }, [isAuthenticated]);
 
     const addToCart = async ({ productId, variantId, quantity = 1 }) => {
+        console.log(productId, variantId, quantity)
         try {
             setStatus(apiStatusConstants.IN_PROGRESS);
-            const res = await cartService.addToCart({ productId, variantId, quantity });
+            const res = await cartService.addToCart({ productId, product_variant_id: variantId, quantity });
             successHandler(res);
             await fetchCart(); // Refresh cart data
         } catch (err) {
@@ -55,6 +58,13 @@ export const CartProvider = ({ children }) => {
             postErrorHandler(err);
         }
     };
+
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchCart();
+        }
+    }, [isAuthenticated, fetchCart]);
 
     return (
         <CartContext.Provider value={{

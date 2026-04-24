@@ -17,20 +17,6 @@ export const ModulesProvider = ({ children }) => {
     const [tree, setTree] = useState([]);
     const [status, setStatus] = useState(apiStatusConstants.INITIAL);
 
-    const fetchModulesFeaturesPermissions = useCallback(async () => {
-        if (!isAuthenticated) return;
-        try {
-            setStatus(apiStatusConstants.IN_PROGRESS);
-            const res = await modulesService.getModulesFeaturesPermissions(user);
-            setTree(res.data.data || []);
-            setStatus(apiStatusConstants.SUCCESS);
-        } catch (err) {
-            setError(err);
-            setStatus(apiStatusConstants.FAILURE);
-            // Not re-throwing here as this is usually an auto-fetch background call
-        }
-    }, [isAuthenticated]);
-
     const fetchModules = useCallback(async (filters) => {
         if (!isAuthenticated) return;
         try {
@@ -66,7 +52,7 @@ export const ModulesProvider = ({ children }) => {
             setStatus(apiStatusConstants.IN_PROGRESS);
             const res = await modulesService.createModule(data);
             successHandler(res);
-            await Promise.all([fetchModulesFeaturesPermissions(), fetchModules()]);
+            await Promise.all([fetchModules()]);
             return res.data;
         } catch (err) {
             postErrorHandler(err);
@@ -83,7 +69,7 @@ export const ModulesProvider = ({ children }) => {
             setStatus(apiStatusConstants.IN_PROGRESS);
             const res = await modulesService.updateModule(id, data);
             successHandler(res);
-            await Promise.all([fetchModulesFeaturesPermissions(), fetchModules()]);
+            await Promise.all([fetchModules()]);
             return res.data;
         } catch (err) {
             postErrorHandler(err);
@@ -100,7 +86,7 @@ export const ModulesProvider = ({ children }) => {
             setStatus(apiStatusConstants.IN_PROGRESS);
             const res = await modulesService.deleteModule(id);
             successHandler(res);
-            await Promise.all([fetchModulesFeaturesPermissions(), fetchModules()]);
+            await Promise.all([fetchModules()]);
         } catch (err) {
             postErrorHandler(err);
             setStatus(apiStatusConstants.FAILURE);
@@ -110,14 +96,13 @@ export const ModulesProvider = ({ children }) => {
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            fetchModulesFeaturesPermissions();
             fetchModules();
         } else {
             setModules([]);
             setTree([]);
             setStatus(apiStatusConstants.INITIAL);
         }
-    }, [isAuthenticated, fetchModulesFeaturesPermissions, fetchModules]);
+    }, [isAuthenticated, fetchModules]);
 
     return (
         <ModulesContext.Provider
@@ -129,7 +114,7 @@ export const ModulesProvider = ({ children }) => {
                 loading: status === apiStatusConstants.IN_PROGRESS,
                 isError: status === apiStatusConstants.FAILURE,
                 isEmpty: status === apiStatusConstants.SUCCESS && modules.length === 0,
-                fetchModulesFeaturesPermissions,
+
                 fetchModules,
                 fetchModule,
                 createModule,

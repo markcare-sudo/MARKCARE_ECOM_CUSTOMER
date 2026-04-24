@@ -1,8 +1,12 @@
 import { Outlet, Link } from "react-router-dom";
 import { FiShoppingCart, FiUser, FiSearch, FiHeart } from "react-icons/fi";
 import Header from "./Header";
+import CartDrawer from "@/features/products/pages/CartDrawer";
+import { useState } from "react";
 
 const CustomerLayout = () => {
+    const [isCartOpen, setIsCartOpen] = useState(false);
+
     return (
         <div className="min-h-screen flex flex-col bg-slate-50">
             {/* TOP NAVBAR */}
@@ -35,12 +39,17 @@ const CustomerLayout = () => {
                 </div>
             </header> */}
 
-            <Header />
+            <Header onOpenCart={() => setIsCartOpen(true)} />
 
             {/* MAIN CONTENT */}
             <main className="flex-1">
                 <Outlet />
             </main>
+
+            <CartDrawer
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+            />
 
             {/* FOOTER */}
             <footer className="bg-white border-t py-10 mt-20">
