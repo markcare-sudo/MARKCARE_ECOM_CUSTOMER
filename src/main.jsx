@@ -17,6 +17,8 @@ import { CategoryProvider } from './context/CategoryContext';
 import { ServiceProvider } from './context/ServiceContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { AddressProvider } from './context/AddressContext';
+import { OrderProvider } from './context/OrderContext';
 
 
 createRoot(document.getElementById('root')).render(
@@ -31,19 +33,23 @@ createRoot(document.getElementById('root')).render(
               {/* 2. Identity and Access next */}
               <RolesProvider>
                 <UsersProvider>
-                  <BrandProvider>
-                    <CategoryProvider>
-                      <ProductProvider>
-                        <ServiceProvider>
-                          <CartProvider>
-                            <WishlistProvider>
-                              <App />
-                            </WishlistProvider>
-                          </CartProvider>
-                        </ServiceProvider>
-                      </ProductProvider>
-                    </CategoryProvider>
-                  </BrandProvider>
+                  <AddressProvider>
+                    <BrandProvider>
+                      <CategoryProvider>
+                        <ProductProvider>
+                          <ServiceProvider>
+                            <CartProvider>
+                              <WishlistProvider>
+                                <OrderProvider>
+                                  <App />
+                                </OrderProvider>
+                              </WishlistProvider>
+                            </CartProvider>
+                          </ServiceProvider>
+                        </ProductProvider>
+                      </CategoryProvider>
+                    </BrandProvider>
+                  </AddressProvider>
                 </UsersProvider>
               </RolesProvider>
             </FeaturesProvider>

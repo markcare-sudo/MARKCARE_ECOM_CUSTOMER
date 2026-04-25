@@ -100,12 +100,12 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto py-4 min-h-screen">
+    <div className="space-y-6 max-w-7xl mx-auto">
 
       <PageHeader
         title="Profile"
         subtitle="Manage your personal information"
-        breadcrumb="Settings / Profile"
+        // breadcrumb="Settings / Profile"
         action={
           !editing ? (
             <Button

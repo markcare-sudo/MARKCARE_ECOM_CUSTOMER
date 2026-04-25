@@ -19,7 +19,7 @@ export const CartProvider = ({ children }) => {
         try {
             setStatus(apiStatusConstants.IN_PROGRESS);
             const res = await cartService.getCart();
-            console.log(res.data.data)
+
             setCart(res.data.data || []);
             setStatus(apiStatusConstants.SUCCESS);
         } catch (err) {
@@ -28,10 +28,10 @@ export const CartProvider = ({ children }) => {
     }, [isAuthenticated]);
 
     const addToCart = async ({ productId, variantId, quantity = 1 }) => {
-        console.log(productId, variantId, quantity)
+
         try {
             setStatus(apiStatusConstants.IN_PROGRESS);
-            const res = await cartService.addToCart({ productId, product_variant_id: variantId, quantity });
+            const res = await cartService.addToCart({ product_id: productId, product_variant_id: variantId, quantity });
             successHandler(res);
             await fetchCart(); // Refresh cart data
         } catch (err) {

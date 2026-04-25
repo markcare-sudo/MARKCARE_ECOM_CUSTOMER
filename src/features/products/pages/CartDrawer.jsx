@@ -7,8 +7,6 @@ const CartDrawer = () => {
     const { cart, updateQuantity, removeFromCart } = useCart();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    console.log(cart)
-
     const isOpen = searchParams.get("cart") === "open";
 
     const closeDrawer = () => {

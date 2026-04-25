@@ -10,6 +10,7 @@ import {
   FiShoppingCart,
   FiMenu,
   FiPackage,
+  FiMapPin,
 } from "react-icons/fi";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import LOGOS from "@/constants/images";
@@ -82,7 +83,7 @@ const Header = () => {
 
           {/* Wishlist - Hidden on very small mobile to save space */}
           <Link
-            to="/wishlist"
+            to="/account/wishlist"
             className="hidden sm:flex p-2.5 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-full transition-colors"
           >
             <FiHeart size={22} />
@@ -123,9 +124,10 @@ const Header = () => {
                     <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
                     <p className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Verified Account</p>
                   </div>
-                  <DropdownLink to="/profile" icon={<FiUser />} label="My Profile" />
-                  <DropdownLink to="/orders" icon={<FiPackage />} label="Orders & Bookings" />
-                  <DropdownLink to="/settings" icon={<FiSettings />} label="Settings" />
+                  <DropdownLink to="/account/profile" icon={<FiUser />} label="My Profile" />
+                  <DropdownLink to="/account/addresses" icon={<FiMapPin />} label="My Address" />
+                  <DropdownLink to="/account/orders" icon={<FiPackage />} label="Orders & Bookings" />
+                  <DropdownLink to="/account/settings" icon={<FiSettings />} label="Settings" />
                   <div className="border-t border-gray-50 mt-2 pt-2">
                     <button onClick={logout} className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors">
                       <FiLogOut /> Logout

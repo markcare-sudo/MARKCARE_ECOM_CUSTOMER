@@ -19,9 +19,8 @@ const PhoneInput = ({
       )}
 
       <div
-        className={`w-full border rounded-md h-11 px-3 flex items-center focus-within:ring-2 focus-within:ring-indigo-500 ${
-          error ? "border-red-500" : "border-gray-300"
-        }`}
+        className={`w-full border rounded h-11 px-3 flex items-center focus-within:ring-2 focus-within:ring-indigo-500 ${error ? "border-red-500" : "border-gray-300"
+          }`}
       >
         <PhoneInputLib
           international
