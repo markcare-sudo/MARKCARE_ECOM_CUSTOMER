@@ -19,11 +19,11 @@ const AccountLayout = ({ children }) => {
     ];
 
     return (
-        <div className="min-h-screen bg-slate-50 py-8">
+        <div className="min-h-screen bg-slate-50 py-4 md:py-8">
             <div className="max-w-7xl px-4 mx-auto flex flex-col md:flex-row gap-8">
 
                 {/* Sidebar */}
-                <aside className="w-full md:w-80 flex-shrink-0">
+                <aside className="hidden md:block w-full md:w-80 flex-shrink-0">
                     <div className="bg-white rounded shadow-sm border border-slate-100 overflow-hidden">
 
                         {/* User Header */}

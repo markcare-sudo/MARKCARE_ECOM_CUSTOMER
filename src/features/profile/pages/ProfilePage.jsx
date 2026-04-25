@@ -21,7 +21,7 @@ const ProfilePage = () => {
     name: user.name,
     email: user.email,
     phone: user.phone,
-    role: "Super Admin",
+    role: "CUSTOMER",
   });
 
   const [original, setOriginal] = useState(form);

@@ -100,7 +100,7 @@ const AddressForm = ({ onSubmit, onCancel, initialData = null }) => {
     ) : null;
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white p-5 sm:p-8 rounded border border-slate-100 shadow-xl">
+        <form onSubmit={handleSubmit} className="bg-white md:p-8 rounded p-2 md:border border-slate-100 md:shadow-xl">
             <h3 className="text-lg font-bold text-slate-800 mb-6">
                 {initialData?.id ? "Edit Address" : "Add New Address"}
             </h3>
