@@ -3,10 +3,11 @@ import { State, City } from "country-state-city";
 import { FiNavigation, FiAlertCircle, FiHome, FiBriefcase } from "react-icons/fi";
 import Input from "@/components/ui/Input";
 import PhoneInput from "@/components/ui/PhoneInput";
+import toast from "react-hot-toast";
 
 const AddressForm = ({ onSubmit, onCancel, initialData = null }) => {
     const [loadingLocation, setLoadingLocation] = useState(false);
-    const [errors, setErrors] = useState({}); // New errors state
+    const [errors, setErrors] = useState({});
     const indiaStates = State.getStatesOfCountry("IN");
 
     const [formData, setFormData] = useState({
@@ -39,43 +40,80 @@ const AddressForm = ({ onSubmit, onCancel, initialData = null }) => {
         }
     }, [formData.state_code]);
 
-    // Validation Logic
+    const handleGetCurrentLocation = () => {
+        if (!navigator.geolocation) {
+            return toast.error("Geolocation is not supported by your browser");
+        }
+
+        setLoadingLocation(true);
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+
+                try {
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+                    );
+                    const data = await response.json();
+                    const addr = data.address;
+
+                    // Logic to find the best string for Locality
+                    const detectedLocality = addr.suburb || addr.neighbourhood || addr.residential || addr.sector || addr.road || "";
+
+                    const detectedState = indiaStates.find(
+                        (s) => s.name.toLowerCase() === (addr.state || "").toLowerCase()
+                    );
+
+                    setFormData((prev) => ({
+                        ...prev,
+                        latitude: latitude.toString(),
+                        longitude: longitude.toString(),
+                        pincode: addr.postcode || prev.pincode,
+                        state: detectedState ? detectedState.name : prev.state,
+                        state_code: detectedState ? detectedState.isoCode : prev.state_code,
+                        city: addr.city || addr.town || addr.village || prev.city,
+                        locality: detectedLocality || prev.locality, // Populating Locality here
+                        address: data.display_name || prev.address
+                    }));
+
+                    toast.success("Location and Locality detected!");
+                } catch (error) {
+                    setFormData(prev => ({ ...prev, latitude: latitude.toString(), longitude: longitude.toString() }));
+                    toast.error("Coordinates caught, but details couldn't be fetched.");
+                } finally {
+                    setLoadingLocation(false);
+                }
+            },
+            () => {
+                setLoadingLocation(false);
+                toast.error("Location access denied.");
+            },
+            { enableHighAccuracy: true }
+        );
+    };
+
     const validateForm = () => {
         let newErrors = {};
-
         if (!formData.full_name.trim()) newErrors.full_name = "Full name is required";
-
-        // Phone: Basic 10 digit check (assuming +91 is handled by PhoneInput)
-        if (!formData.phone || formData.phone.length < 10) {
-            newErrors.phone = "Enter a valid 10-digit mobile number";
-        }
-
-        // Pincode: Exactly 6 digits
-        if (!/^\d{6}$/.test(formData.pincode)) {
-            newErrors.pincode = "Enter a valid 6-digit pincode";
-        }
-
+        if (!formData.phone || formData.phone.length < 10) newErrors.phone = "Enter a valid 10-digit mobile number";
+        if (!/^\d{6}$/.test(formData.pincode)) newErrors.pincode = "Enter a valid 6-digit pincode";
         if (!formData.state) newErrors.state = "Please select a state";
         if (!formData.city) newErrors.city = "Please select a city";
         if (!formData.locality.trim()) newErrors.locality = "Locality/Area is required";
         if (!formData.address.trim()) newErrors.address = "Address details are required";
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        // Clear error when user starts typing
-        if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: null }));
-        }
+        if (errors[field]) setErrors(prev => ({ ...prev, [field]: null }));
     };
 
     const handleStateChange = (e) => {
         const stateName = e.target.value;
         const selectedState = indiaStates.find(s => s.name === stateName);
-
         setFormData(prev => ({
             ...prev,
             state: stateName,
@@ -87,12 +125,9 @@ const AddressForm = ({ onSubmit, onCancel, initialData = null }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (validateForm()) {
-            onSubmit(formData);
-        }
+        if (validateForm()) onSubmit(formData);
     };
 
-    // Helper to render error message
     const ErrorMsg = ({ field }) => errors[field] ? (
         <span className="text-xs text-red-500 mt-1 flex items-center gap-1">
             <FiAlertCircle size={12} /> {errors[field]}
@@ -105,14 +140,14 @@ const AddressForm = ({ onSubmit, onCancel, initialData = null }) => {
                 {initialData?.id ? "Edit Address" : "Add New Address"}
             </h3>
 
-            {/* Use Current Location */}
             <div className="mb-8">
                 <button
                     type="button"
-                    onClick={() => {/* logic from your original code */ }}
+                    onClick={handleGetCurrentLocation}
+                    disabled={loadingLocation}
                     className="w-full flex items-center justify-center gap-2 py-4 bg-indigo-50 text-indigo-600 rounded border-2 border-dashed border-indigo-200 font-semibold hover:bg-indigo-100 transition-all"
                 >
-                    <FiNavigation className={loadingLocation ? "animate-pulse" : ""} />
+                    <FiNavigation className={loadingLocation ? "animate-spin" : ""} />
                     {loadingLocation ? "Locating..." : "Use Current Location"}
                 </button>
             </div>
@@ -124,7 +159,7 @@ const AddressForm = ({ onSubmit, onCancel, initialData = null }) => {
                         placeholder="John Doe"
                         value={formData.full_name}
                         onChange={(e) => handleInputChange('full_name', e.target.value)}
-                        error={!!errors.full_name} // Assuming your Input component handles 'error' prop
+                        error={!!errors.full_name}
                     />
                     <ErrorMsg field="full_name" />
                 </div>
@@ -202,7 +237,6 @@ const AddressForm = ({ onSubmit, onCancel, initialData = null }) => {
                 </div>
             </div>
 
-            {/* Address Type Selection */}
             <div className="md:col-span-2 mt-2">
                 <label className="block text-sm font-medium text-slate-500 mb-3 uppercase tracking-wider">Address Type</label>
                 <div className="flex gap-4">
@@ -231,7 +265,6 @@ const AddressForm = ({ onSubmit, onCancel, initialData = null }) => {
                     </label>
                 </div>
             </div>
-
 
             <div className="flex flex-col sm:flex-row gap-3 mt-8">
                 <button

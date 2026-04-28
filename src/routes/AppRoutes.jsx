@@ -17,6 +17,8 @@ import WishlistPage from "@/features/products/pages/WishlistPage";
 import CheckoutPage from "@/features/products/pages/CheckoutPage";
 import AddressPage from "@/features/address/pages/AddressPage";
 import OrdersPage from "@/features/orders/pages/OrdersPage";
+import TrackOrder from "@/features/profile/pages/TrackOrder";
+import ContactPage from "@/features/profile/pages/ContactPage";
 
 // Lazy-loaded pages
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -33,9 +35,12 @@ const AppRoutes = () => {
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
         <Route path="/verify-email" element={<VerifyUserPage />} />
 
+
         {/* ================= PROTECTED ROUTES ================= */}
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/track-order" element={<TrackOrder />} />
 
             {/* General Pages */}
             <Route path="/" element={<ErrorBoundary><HomePage /></ErrorBoundary>} />
@@ -50,6 +55,7 @@ const AppRoutes = () => {
               <Route path="/account/addresses" element={<ErrorBoundary><AddressPage /></ErrorBoundary>} />
               <Route path="/account/wishlist" element={<ErrorBoundary><WishlistPage /></ErrorBoundary>} />
               <Route path="/account/orders" element={<ErrorBoundary><OrdersPage /></ErrorBoundary>} />
+
             </Route>
 
             {/* Catalog Routes */}
