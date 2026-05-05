@@ -49,7 +49,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-white border-b border-gray-100 shadow-sm">
+    <header className="sticky top-0 z-40 w-full bg-white border-b border-gray-100 shadow-sm">
       {/* 1. TOP UTILITY BAR (Desktop Only - Optional but professional) */}
       <div className="hidden md:block bg-gray-900 text-[11px] py-1.5 text-gray-400">
         <div className="max-w-7xl mx-auto px-4 flex justify-between">

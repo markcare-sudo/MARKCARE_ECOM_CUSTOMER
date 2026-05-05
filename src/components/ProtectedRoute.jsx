@@ -9,7 +9,16 @@ const ProtectedRoute = () => {
 
   // ⏳ Show loader while auth is being checked
   if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
+  }
+
+  // ❌ Not authenticated → redirect to login
+  if (!token || !user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // ✅ Authorized

@@ -11,28 +11,41 @@ export const OrderProvider = ({ children }) => {
     const { isAuthenticated } = useAuthContext();
 
     const [orders, setOrders] = useState([]);
+    const [pagination, setPagination] = useState(null);
+    const [currentOrder, setCurrentOrder] = useState(null);
     const [status, setStatus] = useState(apiStatusConstants.INITIAL);
-    const [currentOrder, setCurrentOrder] = useState(null); // For order details view
 
-    // 1. Fetch all orders (History)
-    const fetchOrders = useCallback(async () => {
+    // =========================
+    // 📦 1. FETCH ORDERS
+    // =========================
+    const fetchOrders = useCallback(async (params = {}) => {
         if (!isAuthenticated) return;
+
         try {
             setStatus(apiStatusConstants.IN_PROGRESS);
-            const res = await ordersService.getOrders();
-            // setOrders(res.data.data || []);
+
+            const res = await ordersService.getOrders(params);
+
+            setOrders(res.data.data?.data || []);
+            setPagination(res.data.data?.pagination || null);
+
             setStatus(apiStatusConstants.SUCCESS);
         } catch (err) {
+            postErrorHandler(err);
             setStatus(apiStatusConstants.FAILURE);
         }
     }, [isAuthenticated]);
 
-    // 2. Fetch specific order details
+    // =========================
+    // 📦 2. ORDER DETAILS
+    // =========================
     const fetchOrderDetails = async (orderId) => {
         try {
             setStatus(apiStatusConstants.IN_PROGRESS);
+
             const res = await ordersService.getOrderById(orderId);
             setCurrentOrder(res.data.data);
+
             setStatus(apiStatusConstants.SUCCESS);
         } catch (err) {
             postErrorHandler(err);
@@ -40,14 +53,19 @@ export const OrderProvider = ({ children }) => {
         }
     };
 
-    // 3. Place a new order
-    const placeOrder = async (orderPayload) => {
+    // =========================
+    // 💳 3. CREATE ORDER
+    // =========================
+    const placeOrder = async (payload) => {
         try {
             setStatus(apiStatusConstants.IN_PROGRESS);
-            const res = await ordersService.createOrder(orderPayload);
-            successHandler(res);
-            await fetchOrders(); // Refresh history
-            return res.data.data; // Return order info for redirection to success page
+
+            const res = await ordersService.createOrder(payload);
+
+            // ⚡ IMPORTANT: return razorpay order
+            setStatus(apiStatusConstants.SUCCESS);
+
+            return res.data.data;
         } catch (err) {
             postErrorHandler(err);
             setStatus(apiStatusConstants.FAILURE);
@@ -55,19 +73,91 @@ export const OrderProvider = ({ children }) => {
         }
     };
 
-    // 4. Cancel an order
-    const cancelOrder = async (orderId, reason) => {
+    // =========================
+    // 🔐 4. VERIFY PAYMENT
+    // =========================
+    const verifyPayment = async (payload) => {
         try {
             setStatus(apiStatusConstants.IN_PROGRESS);
-            const res = await ordersService.cancelOrder(orderId, reason);
+
+            const res = await ordersService.verifyPayment(payload);
+
             successHandler(res);
-            await fetchOrders(); // Refresh list to show 'Cancelled' status
+
+            await fetchOrders(); // refresh orders after payment
+
+            setStatus(apiStatusConstants.SUCCESS);
+
+            return res.data.data;
+        } catch (err) {
+            postErrorHandler(err);
+            setStatus(apiStatusConstants.FAILURE);
+            throw err;
+        }
+    };
+
+    // =========================
+    // ❌ 5. CANCEL ORDER
+    // =========================
+    const cancelOrder = async (orderId) => {
+        try {
+            setStatus(apiStatusConstants.IN_PROGRESS);
+
+            const res = await ordersService.cancelOrder(orderId);
+
+            successHandler(res);
+            await fetchOrders();
+
+            setStatus(apiStatusConstants.SUCCESS);
         } catch (err) {
             postErrorHandler(err);
             setStatus(apiStatusConstants.FAILURE);
         }
     };
 
+    // =========================
+    // 🛠️ 6. UPDATE STATUS (ADMIN)
+    // =========================
+    const updateOrderStatus = async (orderId, statusValue) => {
+        try {
+            setStatus(apiStatusConstants.IN_PROGRESS);
+
+            const res = await ordersService.updateOrderStatus(orderId, {
+                status: statusValue,
+            });
+
+            successHandler(res);
+            await fetchOrders();
+
+            setStatus(apiStatusConstants.SUCCESS);
+        } catch (err) {
+            postErrorHandler(err);
+            setStatus(apiStatusConstants.FAILURE);
+        }
+    };
+
+    // =========================
+    // 🗑️ 7. DELETE ORDER (ADMIN)
+    // =========================
+    const deleteOrder = async (orderId) => {
+        try {
+            setStatus(apiStatusConstants.IN_PROGRESS);
+
+            const res = await ordersService.deleteOrder(orderId);
+
+            successHandler(res);
+            await fetchOrders();
+
+            setStatus(apiStatusConstants.SUCCESS);
+        } catch (err) {
+            postErrorHandler(err);
+            setStatus(apiStatusConstants.FAILURE);
+        }
+    };
+
+    // =========================
+    // 🔁 AUTO LOAD
+    // =========================
     useEffect(() => {
         if (isAuthenticated) {
             fetchOrders();
@@ -75,16 +165,25 @@ export const OrderProvider = ({ children }) => {
     }, [isAuthenticated, fetchOrders]);
 
     return (
-        <OrderContext.Provider value={{
-            orders,
-            currentOrder,
-            status,
-            loading: status === apiStatusConstants.IN_PROGRESS,
-            fetchOrders,
-            fetchOrderDetails,
-            placeOrder,
-            cancelOrder
-        }}>
+        <OrderContext.Provider
+            value={{
+                orders,
+                pagination,
+                currentOrder,
+                status,
+                loading: status === apiStatusConstants.IN_PROGRESS,
+
+                fetchOrders,
+                fetchOrderDetails,
+                placeOrder,
+                verifyPayment,
+                cancelOrder,
+
+                // admin
+                updateOrderStatus,
+                deleteOrder,
+            }}
+        >
             {children}
         </OrderContext.Provider>
     );

@@ -3,8 +3,8 @@ import apiClient from "../utils/api";
 /**
  * Fetches the order history for the authenticated user.
  */
-const getOrders = async () => {
-    return await apiClient.get("/orders");
+const getOrders = async (params) => {
+    return await apiClient.get("/orders", { params });
 };
 
 /**
@@ -21,6 +21,10 @@ const getOrderById = async (orderId) => {
  */
 const createOrder = async (payload) => {
     return await apiClient.post("/orders", payload);
+};
+
+const verifyPayment = async (payload) => {
+    return await apiClient.post("/orders/verify", payload);
 };
 
 /**
@@ -42,6 +46,7 @@ const ordersService = {
     getOrders,
     getOrderById,
     createOrder,
+    verifyPayment,
     cancelOrder,
     trackOrder
 };

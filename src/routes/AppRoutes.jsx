@@ -19,6 +19,7 @@ import AddressPage from "@/features/address/pages/AddressPage";
 import OrdersPage from "@/features/orders/pages/OrdersPage";
 import TrackOrder from "@/features/profile/pages/TrackOrder";
 import ContactPage from "@/features/profile/pages/ContactPage";
+import OrderDetailsPage from "@/features/orders/pages/OrderDetailsPage";
 
 // Lazy-loaded pages
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -55,6 +56,7 @@ const AppRoutes = () => {
               <Route path="/account/addresses" element={<ErrorBoundary><AddressPage /></ErrorBoundary>} />
               <Route path="/account/wishlist" element={<ErrorBoundary><WishlistPage /></ErrorBoundary>} />
               <Route path="/account/orders" element={<ErrorBoundary><OrdersPage /></ErrorBoundary>} />
+              <Route path="/account/orders/:id" element={<ErrorBoundary><OrderDetailsPage /></ErrorBoundary>} />
 
             </Route>
 
