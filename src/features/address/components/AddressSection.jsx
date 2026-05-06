@@ -19,7 +19,7 @@ const AddressSection = ({ addresses, selectedAddress, onSelect, onAddAddress }) 
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                    className="text-sm font-medium border border-blue-600 p-2 rounded cursor-pointer text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
                 >
                     {showForm ? "View Saved" : <><FiPlus /> Add New</>}
                 </button>

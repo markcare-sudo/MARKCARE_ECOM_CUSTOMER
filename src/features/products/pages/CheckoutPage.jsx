@@ -26,18 +26,14 @@ const CheckoutPage = () => {
     const { addresses } = useAddress();
     const navigate = useNavigate();
 
-    console.log(cart);
-
-
     const [selectedAddressId, setSelectedAddressId] = useState(null);
-    const [paymentMethod, setPaymentMethod] = useState("UPI");
+    const [paymentMethod, setPaymentMethod] = useState("ONLINE");
     const [isProcessing, setIsProcessing] = useState(false);
 
     const totalAmount = cart?.total_amount || 0;
 
     const paymentOptions = [
-        { id: "UPI", label: "UPI (Google Pay, PhonePe)", icon: <FaQrcode /> },
-        { id: "CARD", label: "Debit / Credit Card", icon: <FaCreditCard /> },
+        { id: "ONLINE", label: "UPI (Google Pay, PhonePe)", icon: <FaQrcode /> },
         { id: "COD", label: "Cash on Delivery", icon: <FaMoneyBillWave /> },
     ];
 

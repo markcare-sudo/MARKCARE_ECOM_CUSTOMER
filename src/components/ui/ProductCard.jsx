@@ -3,12 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { FiHeart, FiShoppingCart, FiCalendar, FiPlus, FiMinus } from "react-icons/fi";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
+import { useGlobalContext } from "@/context/GlobalContext";
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const { cart, addToCart, updateQuantity } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
+    const { getImageUrl } = useGlobalContext();
 
     const isService = product?.type === "SERVICE";
 
@@ -33,8 +35,8 @@ const ProductCard = ({ product }) => {
     const isOutOfStock = !isService && stock <= 0;
 
     const primaryImage = isService
-        ? product?.images?.find(img => img.is_primary)?.image_url || product?.images?.[0]?.image_url
-        : product?.images?.find(img => img.is_primary)?.url || product?.images?.[0]?.url;
+        ? getImageUrl(product?.images?.find(img => img.is_primary)?.url) || getImageUrl(product?.images?.[0]?.url)
+        : getImageUrl(product?.images?.find(img => img.is_primary)?.url) || getImageUrl(product?.images?.[0]?.url);
 
     const discountPercentage = (originalPrice > currentPrice)
         ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
@@ -46,11 +48,22 @@ const ProductCard = ({ product }) => {
         e.preventDefault();
         e.stopPropagation();
 
+
         if (isService) {
-            // Plan for Service: Redirect to details page to select Slot/Date
-            navigate(`/service/${product?.slug}`);
+            navigate("/booking/checkout", {
+                state: {
+                    service: {
+                        id: product.id,
+                        name: product.name,
+                        price: currentPrice,
+                        image: primaryImage,
+                        slug: product.slug
+                    }
+                }
+            });
             return;
         }
+
 
         if (loading || isOutOfStock) return;
 

@@ -12,7 +12,7 @@ const OrdersPage = () => {
 
     // ✅ FIXED FILTER (based on actual response)
     const filteredOrders = orders.filter(order =>
-        order.id?.toString().includes(searchTerm) ||
+        order.order_code?.toString().includes(searchTerm) ||
         order.items?.some(item =>
             item.product_id?.toString().includes(searchTerm)
         )
@@ -91,7 +91,7 @@ const OrderCard = ({ order, getStatusStyles }) => {
         >
             <div>
                 <h3 className="font-semibold">
-                    Order #{order.id}
+                    Order #{order.order_code}
                 </h3>
 
                 <p className="text-xs text-gray-500">

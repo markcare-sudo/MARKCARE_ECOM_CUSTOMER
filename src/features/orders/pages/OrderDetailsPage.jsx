@@ -3,12 +3,15 @@ import { useParams, Link } from "react-router-dom";
 import { FiArrowLeft, FiLoader, FiAlertCircle } from "react-icons/fi";
 import { useOrder } from "@/context/OrderContext";
 import { apiStatusConstants } from "@/utils/api";
+import { useGlobalContext } from "@/context/GlobalContext";
 
 
 
 const OrderDetailsPage = () => {
     const { id } = useParams();
     const { currentOrder, fetchOrderDetails, status } = useOrder();
+    const { getImageUrl } = useGlobalContext();
+
     const [showCancelBox, setShowCancelBox] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
 
@@ -109,7 +112,7 @@ const OrderDetailsPage = () => {
 
                     <div>
                         <p className="text-sm text-slate-500">Order ID</p>
-                        <p className="font-semibold text-slate-800">{order.id}</p>
+                        <p className="font-semibold text-slate-800">{order.order_code}</p>
 
                         <p className="text-sm text-slate-500 mt-2">Placed On</p>
                         <p className="font-medium">
@@ -153,7 +156,7 @@ const OrderDetailsPage = () => {
                             {/* Image */}
                             <div className="w-20 h-20 border rounded overflow-hidden">
                                 <img
-                                    src={item.variant?.variant_images?.[0]?.url || "/placeholder.png"}
+                                    src={getImageUrl(item.variant?.variant_images?.[0]?.url) || "/placeholder.png"}
                                     alt=""
                                     className="w-full h-full object-contain p-2"
                                 />

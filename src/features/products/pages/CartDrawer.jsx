@@ -2,10 +2,13 @@ import React, { useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { FiX, FiShoppingBag, FiPlus, FiMinus, FiTrash2 } from "react-icons/fi";
 import { useCart } from "@/context/CartContext";
+import { useGlobalContext } from "@/context/GlobalContext";
 
 const CartDrawer = () => {
     const { cart, updateQuantity, removeFromCart } = useCart();
     const [searchParams, setSearchParams] = useSearchParams();
+    const { getImageUrl } = useGlobalContext();
+
 
     const isOpen = searchParams.get("cart") === "open";
 
@@ -54,6 +57,7 @@ const CartDrawer = () => {
                                 item={item}
                                 onUpdate={updateQuantity}
                                 onRemove={removeFromCart}
+                                getImageUrl={getImageUrl}
                             />
                         ))
                     ) : (
@@ -86,13 +90,14 @@ const CartDrawer = () => {
 };
 
 // Helper component for the rows
-const CartRow = ({ item, onUpdate, onRemove }) => {
+const CartRow = ({ item, onUpdate, onRemove, getImageUrl }) => {
     // Correctly destructuring based on your new JSON structure
     const { product, quantity } = item;
     const variant = product?.selected_variant;
 
     // Find the primary image or use the first one available
-    const displayImage = product?.images?.find(img => img.is_primary)?.url || product?.images?.[0]?.url;
+    const displayImage = getImageUrl(variant?.variant_images?.[0]?.url) || getImageUrl(product?.images?.find(img => img.is_primary)?.url) || getImageUrl(product?.images?.[0]?.url) || "/placeholder.png";
+
 
     return (
         <div className="flex gap-4 mb-4 border-b pb-4 last:border-0">

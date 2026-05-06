@@ -20,6 +20,7 @@ import OrdersPage from "@/features/orders/pages/OrdersPage";
 import TrackOrder from "@/features/profile/pages/TrackOrder";
 import ContactPage from "@/features/profile/pages/ContactPage";
 import OrderDetailsPage from "@/features/orders/pages/OrderDetailsPage";
+import BookingPage from "@/features/products/pages/BookingServicePage";
 
 // Lazy-loaded pages
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -48,6 +49,7 @@ const AppRoutes = () => {
             <Route path="/search" element={<ErrorBoundary><SearchPage /></ErrorBoundary>} />
             <Route path="/product/:slug" element={<ErrorBoundary><ProductServiceDetailsPage /></ErrorBoundary>} />
             <Route path="/checkout" element={<ErrorBoundary><CheckoutPage /></ErrorBoundary>} />
+            <Route path="/booking/checkout" element={<ErrorBoundary><BookingPage /></ErrorBoundary>} />
 
             {/* ================= ACCOUNT NESTED ROUTES ================= */}
             {/* These routes will render INSIDE the AccountLayout (with sidebar) */}

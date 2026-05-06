@@ -19,6 +19,7 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AddressProvider } from './context/AddressContext';
 import { OrderProvider } from './context/OrderContext';
+import { GlobalProvider } from './context/GlobalContext';
 
 
 createRoot(document.getElementById('root')).render(
@@ -28,32 +29,34 @@ createRoot(document.getElementById('root')).render(
         <AuthProvider>
           {/* 1. Global Config/Structures first */}
 
-          <ModulesProvider>
-            <FeaturesProvider>
-              {/* 2. Identity and Access next */}
-              <RolesProvider>
-                <UsersProvider>
-                  <AddressProvider>
-                    <BrandProvider>
-                      <CategoryProvider>
-                        <ProductProvider>
-                          <ServiceProvider>
-                            <CartProvider>
-                              <WishlistProvider>
-                                <OrderProvider>
-                                  <App />
-                                </OrderProvider>
-                              </WishlistProvider>
-                            </CartProvider>
-                          </ServiceProvider>
-                        </ProductProvider>
-                      </CategoryProvider>
-                    </BrandProvider>
-                  </AddressProvider>
-                </UsersProvider>
-              </RolesProvider>
-            </FeaturesProvider>
-          </ModulesProvider>
+          <GlobalProvider>
+            <ModulesProvider>
+              <FeaturesProvider>
+                {/* 2. Identity and Access next */}
+                <RolesProvider>
+                  <UsersProvider>
+                    <AddressProvider>
+                      <BrandProvider>
+                        <CategoryProvider>
+                          <ProductProvider>
+                            <ServiceProvider>
+                              <CartProvider>
+                                <WishlistProvider>
+                                  <OrderProvider>
+                                    <App />
+                                  </OrderProvider>
+                                </WishlistProvider>
+                              </CartProvider>
+                            </ServiceProvider>
+                          </ProductProvider>
+                        </CategoryProvider>
+                      </BrandProvider>
+                    </AddressProvider>
+                  </UsersProvider>
+                </RolesProvider>
+              </FeaturesProvider>
+            </ModulesProvider>
+          </GlobalProvider>
         </AuthProvider>
       </BrowserRouter>
     </HelmetProvider>

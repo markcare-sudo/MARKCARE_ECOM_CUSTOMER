@@ -14,6 +14,7 @@ import {
     FiAlertCircle,
     FiInfo
 } from "react-icons/fi";
+import { useGlobalContext } from "@/context/GlobalContext";
 
 // Reusable Section for Description/Specs
 const Section = ({ title, children, className = "" }) => (
@@ -29,6 +30,7 @@ const ProductServiceDetailsPage = () => {
     const { slug } = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
     const { products } = useProducts();
+    const { getImageUrl } = useGlobalContext();
     const [isLiked, setIsLiked] = useState(false);
 
     const product = useMemo(() => products.find((p) => p.slug === slug), [products, slug]);
@@ -45,8 +47,8 @@ const ProductServiceDetailsPage = () => {
 
     useEffect(() => {
         if (selectedVariant) {
-            const variantImg = selectedVariant.variant_images?.[0]?.url;
-            const productImg = product?.images?.find(i => i.is_primary)?.url || product?.images?.[0]?.url;
+            const variantImg = getImageUrl(selectedVariant.variant_images?.[0]?.url);
+            const productImg = getImageUrl(product?.images?.find(i => i.is_primary)?.url) || getImageUrl(product?.images?.[0]?.url);
             setActiveImageUrl(variantImg || productImg);
         }
     }, [selectedVariant, product]);

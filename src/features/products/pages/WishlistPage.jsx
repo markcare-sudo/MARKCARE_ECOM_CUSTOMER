@@ -4,10 +4,12 @@ import { FiTrash2, FiShoppingCart, FiHeart } from "react-icons/fi";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import PageHeader from "@/components/ui/PageHeader";
+import { useGlobalContext } from "@/context/GlobalContext";
 
 const WishlistPage = () => {
     const { wishlist, toggleWishlist, fetchWishlist } = useWishlist();
     const { addToCart } = useCart();
+    const { getImageUrl } = useGlobalContext();
 
     useEffect(() => {
         fetchWishlist();
@@ -50,9 +52,9 @@ const WishlistItemCard = ({ item, onRemove, onMoveToCart }) => {
     const price = Number(variant?.price || 0);
     const originalPrice = variant?.discount_price ? Number(variant.discount_price) : null;
 
-    const image = variant?.variant_images?.[0]?.url ||
-        product?.images?.find(img => img.is_primary)?.url ||
-        product?.images?.[0]?.url ||
+    const image = getImageUrl(variant?.variant_images?.[0]?.url) ||
+        getImageUrl(product?.images?.find(img => img.is_primary)?.url) ||
+        getImageUrl(product?.images?.[0]?.url) ||
         "/placeholder.png";
 
     const handleRemove = (e) => {
