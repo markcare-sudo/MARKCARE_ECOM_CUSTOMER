@@ -7,7 +7,6 @@ import bookingService from "@/services/booking.service";
 import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
 import { FaMoneyBillWave, FaQrcode } from "react-icons/fa";
 
-// Razorpay loader
 const loadRazorpay = () =>
     new Promise((resolve) => {
         if (window.Razorpay) return resolve(true);
@@ -19,11 +18,11 @@ const loadRazorpay = () =>
     });
 
 const BookingPage = () => {
-    const { state } = useLocation(); // ✅ FIX
+    const { state } = useLocation();
     const navigate = useNavigate();
     const { addresses } = useAddress();
 
-    const service = state?.service; // ✅ service from ProductCard
+    const service = state?.service;
 
     const [selectedAddressId, setSelectedAddressId] = useState(null);
     const [date, setDate] = useState("");
@@ -37,7 +36,6 @@ const BookingPage = () => {
         { id: "COD", label: "Cash on Service", icon: <FaMoneyBillWave /> },
     ];
 
-    // ❌ safety: direct access should not break
     if (!service) {
         return (
             <div className="p-10 text-center">
@@ -61,34 +59,32 @@ const BookingPage = () => {
             setLoading(true);
 
             const res = await bookingService.create({
-                service_id: Number(service.id),          // ✅ FIX
-                address_id: Number(selectedAddressId),   // ✅ FIX
+                service_id: Number(service.id),
+                address_id: Number(selectedAddressId),
                 scheduled_date: date,
                 time_slot: timeSlot,
                 notes,
                 payment_method: paymentMethod,
-                total_amount: service.price              // ✅ IMPORTANT
+                total_amount: service.price
             });
 
             const data = res.data.data;
 
-            // ✅ CASH ON SERVICE
             if (paymentMethod === "COD") {
                 toast.success("Booking created!");
                 navigate(`/booking-success/${data.booking.id}`);
                 return;
             }
 
-            // ✅ ONLINE PAYMENT
             const isLoaded = await loadRazorpay();
             if (!isLoaded) return toast.error("Payment SDK failed");
 
-            const options = {
+            const rzp = new window.Razorpay({
                 key: import.meta.env.VITE_RAZORPAY_KEY,
                 amount: data.razorpayOrder.amount,
                 currency: "INR",
                 name: "MarkCare",
-                description: service.name, // ✅ dynamic
+                description: service.name,
                 order_id: data.razorpayOrder.id,
 
                 handler: async (res) => {
@@ -109,13 +105,11 @@ const BookingPage = () => {
                 modal: {
                     ondismiss: () => toast("Payment cancelled"),
                 },
-            };
+            });
 
-            const rzp = new window.Razorpay(options);
             rzp.open();
 
         } catch (err) {
-            console.error(err);
             toast.error(err?.response?.data?.message || "Booking failed");
         } finally {
             setLoading(false);
@@ -123,98 +117,139 @@ const BookingPage = () => {
     };
 
     return (
-        <div className="bg-[#FAFBFF] min-h-screen pb-32">
-            <div className="max-w-7xl mx-auto px-4 pt-6 space-y-8">
+        <div className="bg-[#F8FAFC] min-h-screen pb-32">
+            <div className="max-w-7xl mx-auto px-4 pt-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                {/* ✅ SERVICE SUMMARY (NEW) */}
-                <div className="bg-white p-4 rounded-xl border flex gap-4 items-center">
-                    <img
-                        src={service.image}
-                        alt={service.name}
-                        className="w-20 h-20 object-cover rounded"
-                    />
-                    <div>
-                        <h2 className="font-semibold">{service.name}</h2>
-                        <p className="text-gray-600">₹{service.price}</p>
-                    </div>
-                </div>
+                {/* LEFT SIDE */}
+                <div className="lg:col-span-8 space-y-6">
 
-                {/* ADDRESS */}
-                <AddressSection
-                    addresses={addresses}
-                    selectedAddress={selectedAddressId}
-                    onSelect={setSelectedAddressId}
-                />
-
-                {/* DATE + TIME */}
-                <div className="bg-white p-6 rounded-xl border">
-                    <h3 className="font-semibold mb-4">Schedule</h3>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <input
-                            type="date"
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            className="border p-3 rounded"
+                    {/* SERVICE CARD */}
+                    <div className="bg-white p-5 rounded-2xl border flex gap-5 items-center shadow-sm">
+                        <img
+                            src={service.image}
+                            alt={service.name}
+                            className="w-24 h-24 object-cover rounded-xl border"
                         />
-
-                        <select
-                            value={timeSlot}
-                            onChange={(e) => setTimeSlot(e.target.value)}
-                            className="border p-3 rounded"
-                        >
-                            <option value="">Select Time Slot</option>
-                            <option>10:00 AM - 12:00 PM</option>
-                            <option>12:00 PM - 2:00 PM</option>
-                            <option>2:00 PM - 4:00 PM</option>
-                            <option>4:00 PM - 6:00 PM</option>
-                        </select>
+                        <div>
+                            <h2 className="text-lg font-semibold text-gray-800">
+                                {service.name}
+                            </h2>
+                            <p className="text-indigo-600 font-bold text-lg mt-1">
+                                ₹{service.price}
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                {/* NOTES */}
-                <div className="bg-white p-6 rounded-xl border">
-                    <h3 className="font-semibold mb-2">Notes</h3>
-                    <textarea
-                        className="w-full border p-3 rounded"
-                        placeholder="Any special instructions..."
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
+                    {/* ADDRESS */}
+                    <AddressSection
+                        addresses={addresses}
+                        selectedAddress={selectedAddressId}
+                        onSelect={setSelectedAddressId}
                     />
-                </div>
 
-                {/* PAYMENT */}
-                <div className="bg-white p-6 rounded-xl border">
-                    <h3 className="font-semibold mb-4">Payment Method</h3>
+                    {/* SCHEDULE */}
+                    <div className="bg-white p-6 rounded-2xl border shadow-sm">
+                        <h3 className="font-semibold text-gray-800 mb-4">Schedule Service</h3>
 
-                    <div className="space-y-3">
-                        {paymentOptions.map((opt) => (
-                            <div
-                                key={opt.id}
-                                onClick={() => setPaymentMethod(opt.id)}
-                                className={`p-4 border rounded cursor-pointer flex justify-between ${paymentMethod === opt.id ? "border-indigo-600 bg-indigo-50" : ""
-                                    }`}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input
+                                type="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                            />
+
+                            <select
+                                value={timeSlot}
+                                onChange={(e) => setTimeSlot(e.target.value)}
+                                className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-500"
                             >
-                                <div className="flex gap-3 items-center">
-                                    {opt.icon}
-                                    {opt.label}
+                                <option value="">Select Time Slot</option>
+                                <option>10:00 AM - 12:00 PM</option>
+                                <option>12:00 PM - 2:00 PM</option>
+                                <option>2:00 PM - 4:00 PM</option>
+                                <option>4:00 PM - 6:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* NOTES */}
+                    <div className="bg-white p-6 rounded-2xl border shadow-sm">
+                        <h3 className="font-semibold text-gray-800 mb-3">Additional Notes</h3>
+                        <textarea
+                            className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                            rows={4}
+                            placeholder="Any special instructions..."
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                        />
+                    </div>
+
+                    {/* PAYMENT */}
+                    <div className="bg-white p-6 rounded-2xl border shadow-sm">
+                        <h3 className="font-semibold text-gray-800 mb-4">Payment Method</h3>
+
+                        <div className="grid gap-3">
+                            {paymentOptions.map((opt) => (
+                                <div
+                                    key={opt.id}
+                                    onClick={() => setPaymentMethod(opt.id)}
+                                    className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition 
+                                    ${paymentMethod === opt.id
+                                            ? "border-indigo-600 bg-indigo-50"
+                                            : "hover:border-gray-300"
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="text-lg text-indigo-600">
+                                            {opt.icon}
+                                        </div>
+                                        <span className="font-medium">{opt.label}</span>
+                                    </div>
+                                    {paymentMethod === opt.id && (
+                                        <FiCheckCircle className="text-indigo-600" />
+                                    )}
                                 </div>
-                                {paymentMethod === opt.id && <FiCheckCircle />}
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                {/* BUTTON */}
-                <button
-                    onClick={handleBooking}
-                    disabled={loading}
-                    className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold flex justify-center items-center gap-2"
-                >
-                    {loading ? "Processing..." : "Book Service"}
-                    <FiArrowRight />
-                </button>
+                {/* RIGHT SIDE (SUMMARY) */}
+                <div className="lg:col-span-4">
+                    <div className="sticky top-6 bg-white p-6 rounded-2xl border shadow-lg">
+                        <h3 className="text-lg font-semibold mb-4">Booking Summary</h3>
 
+                        <div className="flex justify-between text-sm text-gray-500 mb-2">
+                            <span>Service</span>
+                            <span>{service.name}</span>
+                        </div>
+
+                        <div className="flex justify-between text-sm text-gray-500 mb-2">
+                            <span>Date</span>
+                            <span>{date || "-"}</span>
+                        </div>
+
+                        <div className="flex justify-between text-sm text-gray-500 mb-4">
+                            <span>Time</span>
+                            <span>{timeSlot || "-"}</span>
+                        </div>
+
+                        <div className="border-t pt-4 flex justify-between font-bold text-lg">
+                            <span>Total</span>
+                            <span>₹{service.price}</span>
+                        </div>
+
+                        <button
+                            onClick={handleBooking}
+                            disabled={loading}
+                            className="mt-6 w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-indigo-500 transition"
+                        >
+                            {loading ? "Processing..." : "Confirm Booking"}
+                            <FiArrowRight />
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );

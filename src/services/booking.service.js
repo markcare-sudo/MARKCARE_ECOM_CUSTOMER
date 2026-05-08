@@ -35,7 +35,7 @@ const create = async (payload) => {
  * 💳 Verify Razorpay payment
  */
 const verifyPayment = async (payload) => {
-    return await apiClient.post("/service-bookings/verify", payload);
+    return await apiClient.post("/service-bookings/verify-payment", payload);
 };
 
 /**
