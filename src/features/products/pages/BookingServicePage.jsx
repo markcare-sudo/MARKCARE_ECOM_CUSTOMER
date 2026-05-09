@@ -72,7 +72,7 @@ const BookingPage = () => {
 
             if (paymentMethod === "COD") {
                 toast.success("Booking created!");
-                navigate(`/booking-success/${data.booking.id}`);
+                navigate(`/booking-success`);
                 return;
             }
 
@@ -96,7 +96,7 @@ const BookingPage = () => {
                         });
 
                         toast.success("Payment successful!");
-                        navigate(`/booking-success/${data.booking.id}`);
+                        navigate(`/booking-success`);
                     } catch {
                         toast.error("Verification failed");
                     }

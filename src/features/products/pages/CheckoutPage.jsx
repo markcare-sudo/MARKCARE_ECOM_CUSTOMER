@@ -62,7 +62,7 @@ const CheckoutPage = () => {
             if (paymentMethod === "COD") {
                 toast.success("Order placed successfully!");
                 await fetchCart();
-                navigate(`/order-success/${data.order.id}`);
+                navigate(`/booking-success`);
                 return;
             }
 
@@ -88,7 +88,7 @@ const CheckoutPage = () => {
 
                         toast.success("Payment successful!");
                         await fetchCart();
-                        navigate(`/order-success/${data.order.id}`);
+                        navigate(`/booking-success`);
                     } catch {
                         toast.error("Payment verification failed");
                     }

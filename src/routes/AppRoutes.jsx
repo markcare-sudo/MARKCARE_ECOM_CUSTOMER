@@ -21,6 +21,7 @@ import TrackOrder from "@/features/profile/pages/TrackOrder";
 import ContactPage from "@/features/profile/pages/ContactPage";
 import OrderDetailsPage from "@/features/orders/pages/OrderDetailsPage";
 import BookingPage from "@/features/products/pages/BookingServicePage";
+import BookingSuccessScreen from "@/components/ui/Success";
 
 // Lazy-loaded pages
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -36,6 +37,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
         <Route path="/verify-email" element={<VerifyUserPage />} />
+        <Route path="/booking-success" element={<BookingSuccessScreen />} />
 
 
         {/* ================= PROTECTED ROUTES ================= */}

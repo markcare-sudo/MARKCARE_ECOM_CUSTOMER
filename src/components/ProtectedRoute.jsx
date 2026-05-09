@@ -17,9 +17,9 @@ const ProtectedRoute = () => {
   }
 
   // ❌ Not authenticated → redirect to login
-  if (!token || !user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+  // if (!token || !user) {
+  //   return <Navigate to="/login" state={{ from: location }} replace />;
+  // }
 
   // ✅ Authorized
   return <Outlet />;
